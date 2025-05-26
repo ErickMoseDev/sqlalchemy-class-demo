@@ -16,11 +16,14 @@ class Customer(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    email = Column(String(100), nullable=False)
-    phone = Column(String, nullable=False)
+    email = Column(String(100), nullable=False, unique=True)
+    phone = Column(String, nullable=False, unique=True)
     gender = Column(String, nullable=False)
     age = Column(Integer, nullable=True)
     created_at = Column(DateTime(), default=datetime.now())
+
+    def __repr__(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Product(Base):
@@ -33,6 +36,7 @@ class Product(Base):
     price = Column(Integer, nullable=False)
     rating = Column(Integer, nullable=True)
     quantity = Column(Integer, nullable=False)
+    created_at = Column(DateTime(), default=datetime.now())
 
 
 if __name__ == "__main__":

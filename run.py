@@ -1,16 +1,93 @@
 #!/usr/bin/env python3
 
 from config.setup import engine
-
+from sqlalchemy.orm import sessionmaker
 from lib.models import Customer, Product
 
 
+# create a Session class
+Session = sessionmaker(bind=engine)
+
+# session instance
+session = Session()
+
+
+# simply add a new customer to the database
+# customer1 = Customer(
+#     first_name="Jane",
+#     last_name="Doe",
+#     email="janedoe@gmail.com",
+#     phone="0712345678",
+#     gender="Female",
+#     age=30,
+# )
+
+# product1 = Product(
+#     name="Tecno",
+#     description="A good phone",
+#     category="Phones",
+#     price=20000,
+#     quantity=10,
+# )
+
+
+# session.add(customer1)
+# session.add(product1)
+# session.add_all([customer1, product1])
+# session.commit()
+def printMessage(message):
+    print(
+        f"-----------------------------------------------\n{message}\n------------------------------------------------"
+    )
+
+
 def add_customers():
-    pass
+    first_name = input("Enter the first name: ")
+    last_name = input("Enter the last name: ")
+    email = input("Enter the customer email: ")
+    phone = input("Enter the customer phone: ")
+    gender = input("Enter the customers gender: ")
+
+    while True:
+        age = input("Enter the customers age: ")
+
+        if not age.isdigit():
+            print("Age has to be a number. Please try again!")
+            continue
+
+        try:
+            customer = Customer(
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                phone=phone,
+                gender=gender,
+                age=int(age),
+            )
+
+            session.add(customer)
+            session.commit()
+
+            printMessage("Customer added Successfully!")
+            return
+
+        except Exception as e:
+            print(f"An Error occured: {e}")
+            session.rollback()
 
 
 def fetch_all_customers():
-    pass
+    customers = session.query(Customer).all()
+    for customer in customers:
+        print("------------------------------------------------------")
+        print(f"id: {customer.id}")
+        print(f"firstname: {customer.first_name}")
+        print(f"lastname: {customer.last_name}")
+        print(f"email: {customer.email}")
+        print(f"phone: {customer.phone}")
+        print(f"gender: {customer.gender}")
+        print(f"age: {customer.age}")
+        print("------------------------------------------------------")
 
 
 def fetch_one_customer():
@@ -25,9 +102,13 @@ def main():
         "3": fetch_one_customer,
     }
 
+    print(
+        "-------------------------------------------------------------\nWELCOME TO THE INVICTUS SHOP.\nWE SELL KNOWLEDGE.\nTAP INTO THE MYSTERIES OF YOUR BRAIN AND UNLOCK NEW HORIZONS\n-------------------------------------------------------------"
+    )
+
     while True:
         print("Select an option below:")
-        print("1. Add customers")
+        print("1. Add a customer")
         print("2. Fetch all customers")
         print("3. Fetch one customer")
         print("4. Add a product")
@@ -46,6 +127,14 @@ def main():
                 "-----------------------------------------------\nThank you for visiting our store. Welcome again!\n------------------------------------------------"
             )
             break
+
+        action = cli_actions.get(choice)
+
+        if action:
+            action()
+        else:
+            print("Invalid choice! Try again")
+            print("*************************************************************")
 
 
 if __name__ == "__main__":
