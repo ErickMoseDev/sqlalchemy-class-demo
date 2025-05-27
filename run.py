@@ -94,12 +94,51 @@ def fetch_one_customer():
     pass
 
 
+def update_customer():
+    while True:
+        customer_id = input("Enter the customer id: ")
+
+        if not customer_id.isdigit():
+            print("Customer id has to be a digit. Try again!")
+            continue
+
+        try:
+            customer = session.query(Customer).filter_by(id=customer_id).one_or_none()
+
+            if customer:
+                fname = input("Enter the updated first name: ")
+                lname = input("Enter the updated last name: ")
+                email = input("Enter the updated email: ")
+                phone = input("Enter the updated phone number: ")
+                gender = input("Enter the updated gender: ")
+                age = input("Enter the updated age: ")
+
+                # update the db with the latest changes
+                customer.first_name = fname or customer.first_name
+                customer.last_name = lname or customer.last_name
+                customer.email = email or customer.email
+                customer.phone = phone or customer.phone
+                customer.gender = gender or customer.gender
+                customer.age = age or customer.age
+
+                session.commit()
+                printMessage("User updated successfully!")
+                return
+            else:
+                printMessage("Invalid Customer id. Try again!")
+
+        except Exception as e:
+            print(f"Error occured: {e}")
+            session.rollback()
+
+
 # simple cli to insert data
 def main():
     cli_actions = {
         "1": add_customers,
         "2": fetch_all_customers,
         "3": fetch_one_customer,
+        "7": update_customer,
     }
 
     print(
