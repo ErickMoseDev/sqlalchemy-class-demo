@@ -2,7 +2,7 @@
 
 from config.setup import engine
 from sqlalchemy.orm import sessionmaker
-from lib.models import Customer, Product
+from lib.models import Customer
 
 
 # create a Session class
