@@ -1,40 +1,13 @@
 #!/usr/bin/env python3
 
-from config.setup import engine
-from sqlalchemy.orm import sessionmaker
+from config.setup import Session
 from lib.models import Customer
 
-
-# create a Session class
-Session = sessionmaker(bind=engine)
 
 # session instance
 session = Session()
 
 
-# simply add a new customer to the database
-# customer1 = Customer(
-#     first_name="Jane",
-#     last_name="Doe",
-#     email="janedoe@gmail.com",
-#     phone="0712345678",
-#     gender="Female",
-#     age=30,
-# )
-
-# product1 = Product(
-#     name="Tecno",
-#     description="A good phone",
-#     category="Phones",
-#     price=20000,
-#     quantity=10,
-# )
-
-
-# session.add(customer1)
-# session.add(product1)
-# session.add_all([customer1, product1])
-# session.commit()
 def printMessage(message):
     print(
         f"-----------------------------------------------\n{message}\n------------------------------------------------"
@@ -91,7 +64,33 @@ def fetch_all_customers():
 
 
 def fetch_one_customer():
-    pass
+    customer_id = input("Enter a customer id: ")
+
+    try:
+        customer = session.query(Customer).filter_by(id=customer_id).one_or_none()
+
+        orders = customer.orders
+
+        print(
+            f"Here are your associated orders Mr/Mrs {customer.first_name} {customer.last_name}"
+        )
+
+        for order in orders:
+            print("------------------------------------------------------")
+            print(f"order_id: {order.order_id}")
+            print(f"status: {order.status}")
+            print(f"total: {order.total_amount}")
+            print("The following are the order items:")
+            for item in order.order_items:
+                print(f"product name: {item.product.name}")
+                print(f"product category: {item.product.category}")
+                print(f"product price: {item.product.price}")
+                print(f"product quantity: {item.quantity}")
+                print("------------------------------------------------------")
+
+    except Exception as e:
+        print(f"Error occured: {e}")
+        session.rollback()
 
 
 def update_customer():

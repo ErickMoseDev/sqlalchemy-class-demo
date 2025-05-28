@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey, MetaData
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 from datetime import datetime
 
@@ -30,6 +30,10 @@ class Customer(Base):
     age = Column(Integer, nullable=True)
     created_at = Column(DateTime(), default=datetime.now())
 
+    # one side
+
+    orders = relationship("Order", back_populates="customer")
+
     def __repr__(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -46,6 +50,9 @@ class Product(Base):
     quantity = Column(Integer, nullable=False)
     created_at = Column(DateTime(), default=datetime.now())
 
+    # one side
+    order_items = relationship("OrderItem", back_populates="product")
+
 
 class Order(Base):
     __tablename__ = "orders"
@@ -59,6 +66,10 @@ class Order(Base):
     # foreign key (many side of the relationship)
     customer_id = Column(Integer, ForeignKey("customers.id"))
 
+    # relationships (many side -> customers (1 to Many relationship with customers))
+    customer = relationship("Customer", back_populates="orders")
+    order_items = relationship("OrderItem", back_populates="order")
+
 
 class OrderItem(Base):
     __tablename__ = "order_items"
@@ -71,6 +82,8 @@ class OrderItem(Base):
     product_id = Column(Integer, ForeignKey("products.id"))
 
     # relationships
+    product = relationship("Product", back_populates="order_items")
+    order = relationship("Order", back_populates="order_items")
 
 
 # relationship between a customer and an order
